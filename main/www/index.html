@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+	<title>TensorFlow</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+</head>
+<style type="text/css">
+	body 
+	{
+	  margin: 0;
+	  padding:0;
+	  background: #E6E6E6;
+	}
+	.nav-bar
+	{
+		background: #FFA800;
+		height: 70px;
+		overflow: hidden;
+	}
+	.title
+	{
+		color: #616161;
+		font-size: 24px;
+		font-weight: 800;
+		font-family: sans-serif;
+		text-align:center; 
+	}
+
+	.cam-stream
+	{
+		padding-top: 10px;
+		padding-bottom: 10px;
+		display:block;
+    	margin:auto;
+	}
+	.stream-btn
+	{
+		height: 40px;
+		width: 200px;
+		font-family: sans-serif;
+		display:block;
+    	margin:auto;
+    	background: #FFA800;
+    	border-radius: 10px;
+    	color: white;
+    	text-align: center;
+    	font-size: 16px;
+    	cursor: pointer;
+	}
+	.static-lbl
+	{
+		color:#FFA800;
+		display:block;
+    	margin:auto;
+		font-size: 20px;
+		font-family: sans-serif;
+		font-weight: bold;
+    	text-align: center;
+	}
+	.predict-lbl
+	{
+		color:#616161;
+		display:block;
+		font-size: 16px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+    	margin:auto;
+		font-family: sans-serif;
+    	text-align: center;
+	}
+</style>
+<body>
+	<div class="nav-bar">
+		<h1 class="title">TensorFlow on ESP32</h1>
+	</div>
+	<div>
+		<label class="static-lbl">Prediction:</label>
+		<label class="predict-lbl">None</label>
+	</div>
+	<div>
+		<button class="stream-btn" type="button">Start Stream</button>
+	</div>
+	<figure >
+	    <img class="cam-stream" src="" crossorigin>
+	</figure>
+
+</body>
+<script type="text/javascript">
+	document.addEventListener('DOMContentLoaded', function (event) 
+	{
+
+		var baseHost = document.location.origin;
+		var streamUrl = baseHost + ':81';
+		console.log("Stream URL : ",streamUrl);
+
+		let stream_btn = document.querySelector('button.stream-btn');
+		let prediction_label = document.querySelector('label.predict-lbl');
+		let view = document.querySelector('img.cam-stream');
+		stream_btn.onclick = function()
+		{
+			if(stream_btn.innerText == "Start Stream")
+			{
+				stream_btn.innerText = "Stop Stream";
+				startStreaming();
+			}
+			else
+			{
+				stream_btn.innerText = "Start Stream";
+				stopStreaming();
+			}
+		}
+
+		function startStreaming()
+		{
+			view.src = `${streamUrl}/stream`;
+		}
+
+		function stopStreaming()
+		{
+			window.stop();
+		}
+
+		var event_source = new EventSource("/prediction");
+		event_source.onopen = function() 
+		{
+	    	console.log("Connection to server opened.");
+		};
+
+		event_source.onmessage = function(e) 
+		{
+	    	console.log(e.data);
+	    	prediction_label.innerText = e.data;
+		};
+
+		event_source.onerror = function() 
+		{
+			console.log("EventSource failed.");
+		};
+	})
+
+</script>
+</html> 
