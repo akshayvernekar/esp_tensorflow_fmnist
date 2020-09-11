@@ -13,3 +13,6 @@ Clone the repository using below command
 
 If you clone project without --recursive flag, please go to the project directory and run command git submodule update --init before doing anything.
 
+## Video:
+
+To watch the video of the demo click [here](https://www.youtube.com/watch?v=Udb_wEzT6zk)
